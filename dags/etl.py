@@ -125,10 +125,8 @@ with DAG(
                 cursor.close()
             conn.close()
 
-        
-    # Step 5: Verify the data DBViewer 
 
-    # Step 6: Define the tasks and their dependencies
+    # Step 5: Define the tasks and their dependencies
     create_table_task = create_table()
     extract_data_task = extract_data
     transform_data_task = transform_apod_data(extract_data_task.output)
