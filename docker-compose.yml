@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  postgres-data:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - airflow_network
+
+networks:
+  airflow_network:
+    external: False
