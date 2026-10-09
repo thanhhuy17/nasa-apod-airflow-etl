@@ -3,7 +3,7 @@ from airflow.providers.http.operators.http import HttpOperator
 from airflow.decorators import task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
@@ -38,13 +38,27 @@ with DAG(
 
     # Step 2: Extract data from NASA APOD API - Astronomy Picture of the Day
     # https://api.nasa.gov/planetary/apod?api_key=gSptJt9U4RYFoGVPDe350eqs5UOYUWh0EG7fwckW
+    # extract_data = HttpOperator(
+    #     task_id='extract_apod',
+    #     method='GET',
+    #     http_conn_id='nasa_api',
+    #     endpoint='planetary/apod',
+    #     data = {"api_key": "{{conn.nasa_api.extra_dejson.api_key}}"},  # Use the API key from the connection extra JSON
+    #     response_filter=lambda response: response.json(),  # Parse the response as JSON
+    # )
+    
+
     extract_data = HttpOperator(
-        task_id='extract_apod',
-        method='GET',
-        http_conn_id='nasa_api',
-        endpoint='planetary/apod',
-        data = {"api_key": "{{conn.nasa_api.extra_dejson.api_key}}"},  # Use the API key from the connection extra JSON
-        response_filter=lambda response: response.json(),  # Parse the response as JSON
+    task_id="extract_apod",
+    method="GET",
+    http_conn_id="nasa_api",
+    endpoint="wp-json/wp/v2/apod-basic",
+    data={
+        "api_key": "{{ conn.nasa_api.extra_dejson.api_key }}"
+    },
+    response_filter=lambda response: response.json(),
+    retries=3,
+    retry_delay=timedelta(minutes=2),
     )
     
 
